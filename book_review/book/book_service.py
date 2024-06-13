@@ -28,3 +28,20 @@ class BookServices:
         data = BookAccessor.get_login_user_book(id=id)
         return data
     
+    def update_book_by_id(self, book_id, user_id, update_data):
+        # Get the user details
+        user_services = userServices()
+        user = user_services.get_user_by_id(user_id)
+
+        # Get the book details
+        book = self.get_book_by_id(book_id)
+        
+        # Check if the user is the admin or the owner of the book
+        if user.role != 'Admin' and book.created_by_id != user_id:
+            raise PermissionError("Only admins or the owner of the book can update it.")
+
+        # Perform the update operation
+        for key, value in update_data.items():
+            setattr(book, key, value)
+        book.save()
+        return book

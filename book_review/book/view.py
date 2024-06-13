@@ -86,3 +86,26 @@ class DeleteBook(APIView):
         except Exception as e:
             return response_builder.result_object({'message': str(e)}).fail().internal_error_500().get_response()   
         
+@authentication_classes([BorrowerAuthentication])
+class UpdateBookView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, book_id):
+        book_service = BookServices()
+        response_builder = ResponseBuilder()
+        
+        # Deserialize and validate input data
+        serializer = CreateBookSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                book = book_service.update_book_by_id(book_id, request.user.id, serializer.validated_data)
+                response_serializer = CreateBookSerializer(book)
+                return response_builder.result_object(response_serializer.data).success().ok_200().message('Book updated successfully').get_response()
+            except PermissionError as e:
+                return response_builder.result_object({'message': str(e)}).fail().forbidden_403().get_response()
+            except ValueError as e:
+                return response_builder.result_object({'message': str(e)}).fail().not_found_404().get_response()
+            except Exception as e:
+                return response_builder.result_object({'message': str(e)}).fail().internal_error_500().get_response()
+        else:
+            return response_builder.result_object(serializer.errors).fail().bad_request_400().get_response()
