@@ -12,3 +12,6 @@ class UserAccessor:
         return UserModel.objects.filter(id=id, is_deleted = False).first()
     
     
+    @staticmethod
+    def get_user_by_email(email):
+        return UserModel.objects.filter(email = email, is_deleted=False).first() 

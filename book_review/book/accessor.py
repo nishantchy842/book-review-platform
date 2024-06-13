@@ -1,18 +1,26 @@
-from book_review.models import Book, Review
+from book_review.models import Books
 
 
 class BookAccessor:
     
     @staticmethod
     def get_all_books():
-        return Book.objects.filter(is_deleted = False).all().order_by('-created_at')
+        print('execute')
+        return Books.objects.filter(is_deleted = False).all().order_by('-created_at')
     
     @staticmethod
     def get_book_by_id(id):
-        return Book.objects.filter(id=id, is_deleted = False).first()
+        return Books.objects.filter(id=id, is_deleted = False).first()
+    
     
     @staticmethod
     def delete_book(id):
         book = BookAccessor.get_book_by_id(id=id)
         book.is_deleted = True
-        book.save()
+        return book.save()
+        
+    
+    @staticmethod
+    def get_login_user_book(id):
+        book = Books.objects.filter(created_by_id = id)
+        return book    

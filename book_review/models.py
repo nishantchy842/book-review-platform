@@ -28,6 +28,10 @@ class UserModel(BaseModel):
     role = models.CharField(max_length=50, choices=CHOICE, default=ADMIN)  
     password = models.CharField(max_length=255)
     
+    @property
+    def is_authenticated(self):
+        return True
+    
     def save(self, *arg, **kwargs) -> None:
         user = UserModel.objects.filter(pk=self.pk).first()
         if not user:
@@ -42,17 +46,21 @@ class UserModel(BaseModel):
         return self.name
         
         
-class Book(BaseModel):
+class Books(BaseModel):
     title = models.CharField(max_length=255)
     author = models.CharField(max_length=255)
-    created_by = models.ForeignKey(UserModel, on_delete=models.CASCADE)
+    published_date = models.DateField()
+    isbn = models.CharField(max_length=13, unique=True)
+    pages = models.IntegerField()
+    language = models.CharField(max_length=225)
+    created_by = models.ForeignKey(UserModel,related_name='created_books', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
     
 
 class Review(BaseModel):
-    book = models.ForeignKey(Book, related_name='reviews', on_delete=models.CASCADE)
+    book = models.ForeignKey(Books, on_delete=models.CASCADE)
     review_text = models.TextField()
     created_by = models.ForeignKey(UserModel, on_delete=models.CASCADE)
 

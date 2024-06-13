@@ -3,6 +3,8 @@
 from pathlib import Path
 import os
 from dotenv import dotenv_values
+from datetime import timedelta
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -184,4 +186,13 @@ LOGGING = {
         # }
     },
 
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'ALGORITHM': 'HS512',
+    'SIGNING_KEY': os.getenv('JWT_SIGNING_KEY'),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'JTI_CLAIM': 'jti',
+    'USER_ID_CLAIM': 'id'
 }
